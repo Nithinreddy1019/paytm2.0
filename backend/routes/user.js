@@ -81,7 +81,7 @@ router.post("/signin", async (req, res) => {
       return res.status(411).jaon({ message: "Incorrect password" });
     }
 
-    const token = jwt.sign(username, JWT_PASS);
+    const token = jwt.sign({ username: username }, JWT_PASS);
     res.status(200).json({ token: token });
 
   } catch (error) {
@@ -90,13 +90,41 @@ router.post("/signin", async (req, res) => {
 
 });
 
+const updateSchema = zod.object({
+  firstName: zod.string().optional(),
+  lastName: zod.string().optional(),
+  password: zod.string().optional(),
+})
+router.put("/update", authMiddleware, async (req, res) => {
+  const validatedBody = updateSchema.safeParse(req.body);
+  if (!validatedBody.success) {
+    return res.status(411).json({ message: "Error while updateing the information" })
+  };
+
+  const { firstName, lastName, password } = req.body;
+  if (!password) {
+    await User.updateOne({ username: req.username }, req.body);
+    res.status(200).json({ message: "User updated successfully" });
+    return;
+  }
+
+  const username = req.username;
+  const user = await User.findOne({ username: username });
+  const newHashedPassword = await user.createHash(password);
+
+  await User.updateOne({ username: req.username }, { ...req.body, password: newHashedPassword });
+
+  res.status(200).json({ message: "User updated successfully" });
+
+})
+
 
 router.get("/bulk", authMiddleware, async (req, res) => {
-  const filter = req.query.filter || " ";
+  const filter = req.query.filter || "";
 
   const users = await User.find({
     $or: [
-      { firstName: { "$redex": filter } },
+      { firstName: { "$regex": filter } },
       { lastName: { "$regex": filter } }
     ]
   });
