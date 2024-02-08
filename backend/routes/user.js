@@ -21,7 +21,7 @@ router.post("/signup", async (req, res) => {
     return res.status(411).json({ message: "Incorrect inputs" });
   };
 
-  const existingUser = User.findOne({ username: username });
+  const existingUser = await User.findOne({ username: username });
   if (existingUser) {
     return res.status(411).json({ message: "Email already taken" });
   };
@@ -34,7 +34,7 @@ router.post("/signup", async (req, res) => {
       lastName: lastName
     });
 
-    const hashedPassword = newUser.createHash(password);
+    const hashedPassword = await newUser.createHash(password);
     newUser.password_hash = hashedPassword;
     await newUser.save();
 
@@ -53,6 +53,39 @@ router.post("/signup", async (req, res) => {
     message: "User created successfully",
     token: token
   });
+
+});
+
+
+
+const signinSchema = zod.object({
+  username: zod.string().email(),
+  password: zod.string()
+});
+router.post("/signin", async (req, res) => {
+  const { username, password } = req.body;
+
+  const validatedBody = await signinSchema.safeParse(req.body);
+  if (!validatedBody.success) {
+    return res.status(411).json({ message: "Incorrect inputs" })
+  };
+
+  try {
+    const user = await User.findOne({ username: username });
+    if (!user) {
+      return res.status(411).json({ message: "Incorrect username" });
+    }
+    const correctPassword = await user.validatePassword(password);
+    if (!correctPassword) {
+      return res.status(411).jaon({ message: "Incorrect password" });
+    }
+
+    const token = jwt.sign(username, JWT_PASS);
+    res.status(200).json({ token: token });
+
+  } catch (error) {
+    return res.status(411).json({ message: `An error occured - ${error}` });
+  }
 
 })
 
