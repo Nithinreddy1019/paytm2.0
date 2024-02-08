@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const zod = require("zod");
 const { User, Account } = require("../db");
 const { JWT_PASS } = require("../config");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 const signupSchema = zod.object({
   username: zod.string().email(),
@@ -87,7 +88,29 @@ router.post("/signin", async (req, res) => {
     return res.status(411).json({ message: `An error occured - ${error}` });
   }
 
-})
+});
+
+
+router.get("/bulk", authMiddleware, async (req, res) => {
+  const filter = req.query.filter || " ";
+
+  const users = await User.find({
+    $or: [
+      { firstName: { "$redex": filter } },
+      { lastName: { "$regex": filter } }
+    ]
+  });
+
+  res.json({
+    user: users.map(user => ({
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      id: user._id
+    }))
+  });
+
+});
 
 
 module.exports = router;
