@@ -1,19 +1,22 @@
-import { useState } from 'react'
 import './App.css'
-import InputBox from './components/InputBox'
-import Heading from './components/Heading'
-import SubHeading from './components/SubHeading'
-import Button from './components/Button'
-import BottomWarning from './components/BottomWarining'
+import Signup from "./pages/Signup";
+import Signin from "./pages/Signin";
+import Dashboard from "./pages/Dashboard";
+import SendMoney from "./pages/SendMoney";
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 function App() {
 
   return (
     <>
-      <InputBox label={"Name"} placeholder={"Enter your name"}></InputBox>
-      <Heading label={"Sign up"} />
-      <SubHeading label={"This is a new page "} />
-      <Button label={"Sign up"} />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/signin" element={<Signin />} />
+          <Route path="/dashboard" elament={<Dashboard />} />
+          <Route path="/sendmoney" element={<SendMoney />} />
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
