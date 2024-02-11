@@ -9,7 +9,7 @@ const Header = () => {
         <img className='text-blue-500' src={logo} />
         <p className='hidden md:block font-bold text-sky-500 text-2xl'>Swish it</p>
       </div>
-      <div className='flex items-center px-2'>
+      <div className='flex items-center px-2 pr-4 text-sky-500'>
         <Link className='font-medium text-lg text-center' to={"/about"}>About</Link>
       </div>
     </div>
