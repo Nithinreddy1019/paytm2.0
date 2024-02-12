@@ -3,7 +3,7 @@ import Heading from '../components/Heading'
 import SubHeading from '../components/SubHeading'
 import InputBox from '../components/InputBox'
 import Button from '../components/Button'
-import BottomWarning from '../components/BottomWarining'
+import BottomWarning from '../components/BottomWarning'
 import Header from '../components/Header'
 
 const Signup = () => {
