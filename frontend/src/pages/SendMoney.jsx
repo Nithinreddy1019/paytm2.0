@@ -1,6 +1,16 @@
+import axios from 'axios';
 import React from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
     export const SendMoney = () => {
+      const [searchparams] = useSearchParams();
+      const id = searchparams.get("id");
+      const name = searchparams.get("name");
+      const [amount, setAmount] = useState(0);
+      const navigate = useNavigate();
+
       return <div class="flex justify-center h-screen bg-sky-50">
           <div className="h-full flex flex-col justify-center">
               <div
@@ -12,9 +22,9 @@ import React from 'react'
                   <div class="p-6">
                   <div class="flex items-center space-x-4">
                       <div class="w-12 h-12 rounded-full bg-sky-500 flex items-center justify-center">
-                      <span class="text-2xl text-white">A</span>
+                      <span class="text-2xl text-white">{name[0].toUpperCase()}</span>
                       </div>
-                      <h3 class="text-2xl font-semibold">Friend's Name</h3>
+                      <h3 class="text-2xl font-semibold">{name}</h3>
                   </div>
                   <div class="space-y-4">
                       <div class="space-y-2">
@@ -25,13 +35,28 @@ import React from 'react'
                           Amount (in Rs)
                       </label>
                       <input
+                          onChange={(e) => {
+                            setAmount(e.target.value)
+                          }}
                           type="number"
                           class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                           id="amount"
                           placeholder="Enter amount"
                       />
                       </div>
-                      <button class="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-sky-500 text-white">
+                      <button onClick={() => {
+                        axios.post("http://localhost:3000/api/v1.1/account/transfer", {
+                          to_id: id,
+                          amount: amount
+                        }, {
+                          headers: {"Authorization":"Bearer "+ localStorage.getItem("token")}
+                        }).then((res) => {
+                          if(res.status === 200){
+                            alert("transfer successfull")
+                            navigate("/dashboard")
+                          }
+                        }).catch((err) => {console.log(err)})
+                      }} class="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-sky-500 text-white">
                           Initiate Transfer
                       </button>
                   </div>
