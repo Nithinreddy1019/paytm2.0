@@ -7,7 +7,7 @@ const Balance = ({value}) => {
             Your balance
         </div>
         <div className='text-lg font-semibold ml-4 text-sky-500'>
-            Rs.{value}
+            Rs {value.toFixed(2)}
         </div>
       
     </div>

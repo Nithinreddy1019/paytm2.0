@@ -11,7 +11,7 @@ router.get("/balance", authMiddleware, async (req, res) => {
   const userId = user._id;
   const account = await Account.findOne({ userId: userId });
 
-  res.status(200).json({ balance: account.balance });
+  res.status(200).json({ balance: account.balance, firstName: user.firstName });
 
 });
 
