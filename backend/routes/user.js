@@ -6,6 +6,27 @@ const { User, Account } = require("../db");
 const { JWT_PASS } = require("../config");
 const authMiddleware = require("../middlewares/authMiddleware");
 
+
+router.get("/me", authMiddleware, async  (req, res) => {
+  const username = req.username;
+  if(!username){
+    return res.status(400).json({message:"Not authorized/ not a user"});
+  }
+
+  const userDetails = await User.findOne({username: username});
+  const userId = userDetails._id;
+
+  const accountDetails= await Account.findOne({userId: userId});
+
+  res.status(200).json({
+    "user": {username: userDetails.username, firstName: userDetails.firstName},
+    "account": {balance: accountDetails.balance}
+  })
+
+})
+
+
+
 const signupSchema = zod.object({
   username: zod.string().email(),
   firstName: zod.string(),
