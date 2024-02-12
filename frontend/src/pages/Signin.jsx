@@ -5,13 +5,18 @@ import SubHeading from '../components/SubHeading'
 import InputBox from '../components/InputBox'
 import Button from '../components/Button';
 import BottomWarning from '../components/BottomWarning'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import axios from 'axios';
+import { useUser } from '../hooks/useUser'
+import Dashboard from './Dashboard'
 
 const Signin = () => {
+  const user = useUser();
+  
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
+  
   const navigate = useNavigate();
 
   return (
